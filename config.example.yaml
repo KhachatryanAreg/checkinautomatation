@@ -1,0 +1,23 @@
+# Copy to config.yaml and fill in your values.
+# config.yaml is ignored by git to keep secrets safe.
+
+# Port for the notebook app to receive HTTP POST scans from Ranger 2 scanners.
+listen_port: 8765
+
+# Luma API (Luma Plus subscription required; API key from Calendar → Settings → Developer).
+luma:
+  base_url: "https://public-api.luma.com/v1/event"
+  api_key: "your-luma-api-key"
+  # Optional: event ID if your API calls require it (depends on Luma API version).
+  # event_id: "evt-xxx"
+
+# Printer: use Windows printer name as shown in Settings → Printers.
+# Leave empty to use default Windows printer.
+# For ESC/POS raw printing, set use_raw: true and ensure driver supports raw data.
+printer:
+  name: ""  # e.g. "Terra Nova TPL 100" or "" for default
+  use_raw: true   # true = send raw text/ESC-POS; false = use driver document mode
+
+# Log file for check-ins (timestamp, Ranger ID, ticket ID, print status).
+logging:
+  checkin_log_path: "checkins.csv"
