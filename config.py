@@ -13,6 +13,7 @@ DEFAULTS = {
     "luma": {
         "base_url": "https://public-api.luma.com/v1/event",
         "api_key": "",
+        "check_in_on_scan": True,
         "event_id": "",
     },
     "printer": {

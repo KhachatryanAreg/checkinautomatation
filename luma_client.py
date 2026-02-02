@@ -69,3 +69,37 @@ def fetch_guest_by_ticket_id(
     if not name and not data.get("email"):
         return False, name or "—", company, "Guest data missing or invalid"
     return True, name, company, None
+
+
+def check_in_guest(
+    ticket_id: str,
+    base_url: str,
+    api_key: str,
+    event_id: str | None = None,
+) -> str | None:
+    """
+    Check in the guest in Luma using update-guest-status (POST).
+    ticket_id: same pk value used for get-guest (guest key or ticket key).
+    Returns None on success, or an error message string on failure.
+    """
+    url = f"{base_url.rstrip('/')}/update-guest-status"
+    headers = {
+        "Authorization": f"luma-api-key={api_key}",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
+    body: dict[str, str | bool] = {"id": ticket_id.strip(), "checked_in": True}
+    if event_id:
+        body["event_id"] = event_id
+    try:
+        r = requests.post(url, json=body, headers=headers, timeout=15)
+    except requests.RequestException as e:
+        return str(e)
+    if r.status_code not in (200, 201, 204):
+        try:
+            data = r.json()
+            msg = data.get("message") or data.get("error") or r.text
+        except Exception:
+            msg = r.text or f"HTTP {r.status_code}"
+        return msg
+    return None

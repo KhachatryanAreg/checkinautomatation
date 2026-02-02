@@ -9,7 +9,7 @@ import threading
 from typing import Optional
 
 from config import load_config, get_listen_port, get_luma_settings, get_printer_settings, get_log_settings
-from luma_client import fetch_guest_by_ticket_id
+from luma_client import fetch_guest_by_ticket_id, check_in_guest
 from printer_service import print_receipt
 from checkin_logger import log_checkin
 from scan_server import create_scan_server
@@ -51,17 +51,24 @@ def process_one_scan(
     # 2) Validate: we consider valid if Luma returned 200 and we got a name (or email)
     # Already ensured in fetch_guest_by_ticket_id.
 
-    # 3) Print receipt
+    # 3) Check in guest with Luma (if enabled)
+    checkin_err = None
+    if luma.get("check_in_on_scan", True):
+        checkin_err = check_in_guest(ticket_id, base_url, api_key, event_id)
+
+    # 4) Print receipt
     err = print_receipt(attendee_name, attendee_company, printer_name=printer_name, use_raw=use_raw)
     if err:
         print_status = f"Error: {err}"
     else:
         print_status = "Success"
+    if checkin_err:
+        print_status = f"{print_status} (Luma check-in failed: {checkin_err})"
 
-    # 4) Log
+    # 5) Log
     log_checkin(log_path, ranger_id, ticket_id, print_status, attendee_name, attendee_company)
 
-    # 5) Update GUI
+    # 6) Update GUI
     if gui:
         gui.update_result(ticket_id, attendee_name, attendee_company, print_status, err is None)
 
@@ -131,9 +138,10 @@ def main() -> None:
             )
 
     gui.on_retry_print = retry_print
+    gui.on_manual_checkin = lambda ticket_id: scan_queue.put(("manual", (ticket_id or "").strip()))
 
     print(f"Scan server listening on http://0.0.0.0:{port}/scan")
-    print("Configure Ranger 2 to POST ticket_id (and optional ranger_id) to this URL.")
+    print("Open this IP on the Ranger (e.g. http://192.168.55.82:8765) to load the check-in page and scan.")
     gui.run()
 
 

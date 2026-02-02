@@ -8,6 +8,8 @@ listen_port: 8765
 luma:
   base_url: "https://public-api.luma.com/v1/event"
   api_key: "your-luma-api-key"
+  # Set to true to check in the guest in Luma when a ticket is scanned (POST update-guest-status).
+  check_in_on_scan: true
   # Optional: event ID if your API calls require it (depends on Luma API version).
   # event_id: "evt-xxx"
 
