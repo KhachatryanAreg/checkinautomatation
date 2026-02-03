@@ -127,7 +127,7 @@ Check-ins are appended to the file set in `config.logging.checkin_log_path` (def
 
 - **Get guest**: `GET https://public-api.luma.com/v1/event/get-guest?id={pk_value}`
 - **Check-in**: `POST https://public-api.luma.com/v1/event/update-guest-status` with JSON `{"id": "<pk_value>", "checked_in": true}`
-- Auth: `Authorization: luma-api-key=<your-api-key>`
+- Auth: `Authorization: Bearer <your-api-key>`
 - `pk_value`: guest key (e.g. `g-abc123`) or ticket key from CSV export.
 
 ## License

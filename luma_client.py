@@ -1,7 +1,7 @@
 """
 Luma API client for fetching attendee information by ticket/guest key.
 Uses the Get Guest by Key endpoint: GET .../get-guest?id={pk_value}
-Authentication: Authorization: luma-api-key=<api_key>
+Authentication: Authorization: Bearer <api_key>
 """
 
 import requests
@@ -46,7 +46,7 @@ def fetch_guest_by_ticket_id(
     if event_id:
         params["event_id"] = event_id
     headers = {
-        "Authorization": f"luma-api-key={api_key}",
+        "Authorization": f"Bearer {api_key}",
         "Accept": "application/json",
     }
     try:
@@ -84,7 +84,7 @@ def check_in_guest(
     """
     url = f"{base_url.rstrip('/')}/update-guest-status"
     headers = {
-        "Authorization": f"luma-api-key={api_key}",
+        "Authorization": f"Bearer {api_key}",
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
